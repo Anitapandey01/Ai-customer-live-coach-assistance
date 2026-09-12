@@ -1,4 +1,6 @@
 .venv/
 .env
 __pycache__/
-data/chroma_db/
+app.db
+RAG+db+BACKEND/data/chroma_db/
+RAG+db+BACKEND/data/simulator_logs/
