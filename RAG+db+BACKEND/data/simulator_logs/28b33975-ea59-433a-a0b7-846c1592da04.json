@@ -1,0 +1,45 @@
+{
+  "session_id": "28b33975-ea59-433a-a0b7-846c1592da04",
+  "persona": "impatient",
+  "initial_emotion": "frustrated",
+  "current_emotion": "frustrated",
+  "emotion_score": 54,
+  "satisfaction_status": "unsatisfied",
+  "scenario": "payment_failure",
+  "issue_severity": 3,
+  "patience_level": 60,
+  "expected_resolution": "A fair resolution to the issue.",
+  "turn_number": 3,
+  "conversation": [
+    {
+      "turn": 1,
+      "sender": "customer",
+      "text": "My payment just failed but I need to get this order completed right now. What is going on with your checkout? I need this processed ASAP."
+    },
+    {
+      "turn": 2,
+      "sender": "support_agent",
+      "text": "I understand how urgent this is, and I am very sorry for the frustration this checkout issue is causing. Please verify your card details and try submitting the payment once more, or use an alternative payment method. If money has already been debited from your account, do not submit another payment, but instead reply with your transaction reference, date, and amount (without sharing your full card number, CVV, or PIN) so we can escalate this to our payment support team to investigate.",
+      "timestamp": "2026-09-11T04:58:22.637336+00:00"
+    },
+    {
+      "turn": 2,
+      "sender": "customer",
+      "text": "I already retried and my details are 100% correct. No money has been taken out yet, so how can we get this processed manually? I need this order completed now.",
+      "timestamp": "2026-09-11T04:58:22.637379+00:00"
+    },
+    {
+      "turn": 3,
+      "sender": "support_agent",
+      "text": "I understand how urgent this is for you, and I am very sorry for the continued frustration with our checkout. I am escalating this issue directly to our payment support team right now to see how we can get this order completed for you as quickly as possible. I will monitor this closely and follow up with you the moment I have an update.",
+      "timestamp": "2026-09-11T04:59:09.879823+00:00"
+    },
+    {
+      "turn": 3,
+      "sender": "customer",
+      "text": "How long is that escalation going to take? I need this order finalized immediately, so please give me a specific timeframe.",
+      "timestamp": "2026-09-11T04:59:09.879878+00:00"
+    }
+  ],
+  "created_at": "2026-09-11T04:56:10.642064+00:00"
+}

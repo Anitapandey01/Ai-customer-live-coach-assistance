@@ -1,0 +1,33 @@
+{
+  "session_id": "2d5e3beb-3c8a-4560-be64-b1ae3c8d2215",
+  "persona": "polite",
+  "initial_emotion": "concerned",
+  "current_emotion": "concerned",
+  "emotion_score": 36,
+  "satisfaction_status": "unsatisfied",
+  "scenario": "account_issue",
+  "issue_severity": 3,
+  "patience_level": 60,
+  "expected_resolution": "A fair resolution to the issue.",
+  "turn_number": 2,
+  "conversation": [
+    {
+      "turn": 1,
+      "sender": "customer",
+      "text": "Hello! I hope you're having a good day. I'm having some trouble logging into my account today, and even after trying to reset my password, it's still not letting me in. Could you please help me figure out what might be going on?"
+    },
+    {
+      "turn": 2,
+      "sender": "support_agent",
+      "text": "hello happy to help you .maybe you are trying to login in incognito window or entering wrong password",
+      "timestamp": "2026-09-12T04:58:41.600894+00:00"
+    },
+    {
+      "turn": 2,
+      "sender": "customer",
+      "text": "Thank you for the quick reply! I'm actually using a regular browser tab, and I'm quite sure the new password is correct since I just reset it. Could there perhaps be some sort of temporary lock on my account that you can see on your end?",
+      "timestamp": "2026-09-12T04:58:41.600939+00:00"
+    }
+  ],
+  "created_at": "2026-09-12T04:52:36.488020+00:00"
+}

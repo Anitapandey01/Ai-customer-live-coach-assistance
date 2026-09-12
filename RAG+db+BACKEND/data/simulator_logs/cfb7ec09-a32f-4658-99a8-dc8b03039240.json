@@ -1,0 +1,20 @@
+{
+  "session_id": "cfb7ec09-a32f-4658-99a8-dc8b03039240",
+  "persona": "calm",
+  "initial_emotion": "calm",
+  "current_emotion": "calm",
+  "emotion_score": 15,
+  "scenario": "refund",
+  "issue_severity": 3,
+  "patience_level": 60,
+  "expected_resolution": "A fair resolution to the issue.",
+  "turn_number": 1,
+  "conversation": [
+    {
+      "turn": 1,
+      "sender": "customer",
+      "text": "Hello, I recently made a purchase and I'm wondering if I'm eligible to get a refund for it. Could you help me check if that's possible?"
+    }
+  ],
+  "created_at": "2026-09-10T05:00:27.710089+00:00"
+}

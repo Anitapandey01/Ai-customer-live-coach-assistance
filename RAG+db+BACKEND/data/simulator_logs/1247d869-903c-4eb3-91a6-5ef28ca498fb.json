@@ -1,0 +1,21 @@
+{
+  "session_id": "1247d869-903c-4eb3-91a6-5ef28ca498fb",
+  "persona": "calm",
+  "initial_emotion": "calm",
+  "current_emotion": "calm",
+  "emotion_score": 15,
+  "satisfaction_status": "unsatisfied",
+  "scenario": "refund",
+  "issue_severity": 3,
+  "patience_level": 60,
+  "expected_resolution": "To satisfied the customer with relative issue.",
+  "turn_number": 1,
+  "conversation": [
+    {
+      "turn": 1,
+      "sender": "customer",
+      "text": "Hello. I recently made a purchase on your website, but I would like to request a refund. Could you please help me check if I am eligible for one?"
+    }
+  ],
+  "created_at": "2026-09-12T05:09:28.279623+00:00"
+}

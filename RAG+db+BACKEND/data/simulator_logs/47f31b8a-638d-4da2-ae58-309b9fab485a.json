@@ -1,0 +1,56 @@
+{
+  "session_id": "47f31b8a-638d-4da2-ae58-309b9fab485a",
+  "persona": "frustrated",
+  "initial_emotion": "calm",
+  "current_emotion": "calm",
+  "emotion_score": 10,
+  "scenario": "payment_failure",
+  "issue_severity": 3,
+  "patience_level": 60,
+  "expected_resolution": "A fair resolution to the issue.",
+  "turn_number": 4,
+  "conversation": [
+    {
+      "turn": 1,
+      "sender": "customer",
+      "text": "Hi, I just tried to complete my purchase but the payment failed. I really need to get this ordered today, so can you please check what the issue is?"
+    },
+    {
+      "turn": 2,
+      "sender": "support_agent",
+      "text": "yes i here to help you withthis issue",
+      "timestamp": "2026-09-09T15:16:32.447838+00:00"
+    },
+    {
+      "turn": 2,
+      "sender": "customer",
+      "text": "Okay, thanks. What details do you need from me to check on this? I really need to get this order completed today.",
+      "timestamp": "2026-09-09T15:16:32.447880+00:00"
+    },
+    {
+      "turn": 3,
+      "sender": "support_agent",
+      "text": "first of all you check your network connectivty please",
+      "timestamp": "2026-09-09T15:19:50.676242+00:00"
+    },
+    {
+      "turn": 3,
+      "sender": "customer",
+      "text": "My network is perfectly fine, otherwise I wouldn't be chatting with you right now. The page loaded and then the payment itself failed, so can you please check the actual transaction status on your end?",
+      "timestamp": "2026-09-09T15:19:50.676284+00:00"
+    },
+    {
+      "turn": 4,
+      "sender": "support_agent",
+      "text": "maybe the bank server down you can contact to your branch",
+      "timestamp": "2026-09-09T15:21:59.653546+00:00"
+    },
+    {
+      "turn": 4,
+      "sender": "customer",
+      "text": "You haven't even asked for my account details or email yet, so how can you possibly know it's a bank issue? Please actually check your system first to see if the payment went through or got rejected on your end. I really don't have time to call my bank if the problem is with your website.",
+      "timestamp": "2026-09-09T15:21:59.653613+00:00"
+    }
+  ],
+  "created_at": "2026-09-09T15:15:44.029762+00:00"
+}

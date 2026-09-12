@@ -1,0 +1,68 @@
+{
+  "session_id": "c0bcf1a9-6d32-4665-8b85-a2d719c0df3b",
+  "persona": "frustrated",
+  "initial_emotion": "concerned",
+  "current_emotion": "concerned",
+  "emotion_score": 44,
+  "scenario": "cancellation",
+  "issue_severity": 3,
+  "patience_level": 60,
+  "expected_resolution": "A fair resolution to the issue.",
+  "turn_number": 5,
+  "conversation": [
+    {
+      "turn": 1,
+      "sender": "customer",
+      "text": "Hi, I need to cancel my order immediately. I tried doing it on your website but the option isn't showing up, so can you please check if it's still possible to stop it?"
+    },
+    {
+      "turn": 2,
+      "sender": "support_agent",
+      "text": "okay let me verify the details",
+      "timestamp": "2026-09-09T15:52:06.419851+00:00"
+    },
+    {
+      "turn": 2,
+      "sender": "customer",
+      "text": "Sure, my order number is #88392. Please check it quickly, I really don't want it getting processed and shipped out while we're waiting.",
+      "timestamp": "2026-09-09T15:52:06.419895+00:00"
+    },
+    {
+      "turn": 3,
+      "sender": "support_agent",
+      "text": "okay sir i will be quick with this process and get back to you",
+      "timestamp": "2026-09-09T15:52:51.753890+00:00"
+    },
+    {
+      "turn": 3,
+      "sender": "customer",
+      "text": "Okay, please do. I just really need to make sure this gets stopped before it ships, because having to return it later is going to be a huge hassle. How long do you think this is going to take?",
+      "timestamp": "2026-09-09T15:52:51.753933+00:00"
+    },
+    {
+      "turn": 4,
+      "sender": "support_agent",
+      "text": "give me 10 min to proccess this issue",
+      "timestamp": "2026-09-09T15:54:23.311987+00:00"
+    },
+    {
+      "turn": 4,
+      "sender": "customer",
+      "text": "Ten minutes? That's way too long just to check a status, and it might ship out by then! Can't you just look it up right now?",
+      "timestamp": "2026-09-09T15:54:23.312016+00:00"
+    },
+    {
+      "turn": 5,
+      "sender": "support_agent",
+      "text": "sorry sir  cant do it right now",
+      "timestamp": "2026-09-09T15:55:45.376382+00:00"
+    },
+    {
+      "turn": 5,
+      "sender": "customer",
+      "text": "What do you mean you can't do it right now? Are you actually going to check my order status, or do I need to talk to someone else who can actually do their job?",
+      "timestamp": "2026-09-09T15:55:45.376426+00:00"
+    }
+  ],
+  "created_at": "2026-09-09T15:51:09.591357+00:00"
+}
