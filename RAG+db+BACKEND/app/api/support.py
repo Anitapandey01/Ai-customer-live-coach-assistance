@@ -1,12 +1,20 @@
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from app.services.knowledge_recommendation_service import (
+    get_knowledge_recommendation,
+)
+
 
 router = APIRouter(
     prefix="/support",
     tags=["Live Support"]
 )
 
+
+# --------------------------------------------------
+# Existing Live Support models
+# --------------------------------------------------
 
 class SupportRequest(BaseModel):
     issue_type: str = Field(
@@ -39,6 +47,40 @@ class SupportResponse(BaseModel):
         description="Response returned by the Live Support module."
     )
 
+
+# --------------------------------------------------
+# Knowledge Recommendation models
+# --------------------------------------------------
+
+class ConversationMessage(BaseModel):
+    sender: str = Field(
+        ...,
+        description="Message sender. Use customer or assistant.",
+        examples=["customer"]
+    )
+
+    text: str = Field(
+        ...,
+        min_length=1,
+        description="Conversation message text.",
+        examples=["I want to request a refund."]
+    )
+
+
+class KnowledgeRecommendationRequest(BaseModel):
+    conversation: list[ConversationMessage] = Field(
+        ...,
+        min_length=1,
+        description=(
+            "Current conversation containing customer and "
+            "assistant messages."
+        )
+    )
+
+
+# --------------------------------------------------
+# Existing Live Support endpoint
+# --------------------------------------------------
 
 @router.post(
     "/",
@@ -96,3 +138,41 @@ def live_support(request: SupportRequest):
         "issue_type": request.issue_type,
         "support_response": response
     }
+
+
+# --------------------------------------------------
+# Knowledge Recommendation endpoint
+# --------------------------------------------------
+
+@router.post(
+    "/knowledge-recommendations",
+    summary="Get Knowledge Recommendations",
+    description="""
+Retrieve contextually relevant support knowledge for the
+current customer conversation.
+
+The Knowledge Recommendation Agent:
+
+- Uses the latest customer message.
+- Uses previous conversation context.
+- Retrieves relevant support knowledge from the existing RAG
+  knowledge base.
+- Returns ranked knowledge sources.
+- Returns up to five recommendations.
+- Handles cases where no relevant knowledge is available.
+"""
+)
+def knowledge_recommendations(
+    request: KnowledgeRecommendationRequest,
+):
+    conversation = [
+        {
+            "sender": message.sender,
+            "text": message.text,
+        }
+        for message in request.conversation
+    ]
+
+    return get_knowledge_recommendation(
+        conversation=conversation
+    )

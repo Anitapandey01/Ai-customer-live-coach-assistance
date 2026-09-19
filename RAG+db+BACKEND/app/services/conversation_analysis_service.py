@@ -7,9 +7,10 @@ from app.services.rag_service import generate_with_gemini
 DEFAULT_ANALYSIS = {
     "intent": "Unknown",
     "sentiment": "Neutral",
-    "emotion": "Calm",
-    "frustration_level": 1,
-    "confidence_score": 0,
+    "emotion": "Neutral",
+    "frustration_level": 0,
+    "satisfaction_trend": "Stable",
+    "confidence": 0.0,
 }
 
 
@@ -48,31 +49,37 @@ def validate_analysis(data: dict) -> dict:
     ).strip().capitalize()
 
     emotion = str(
-        data.get("emotion", "Calm")
+        data.get("emotion", "Neutral")
+    ).strip().capitalize()
+
+    satisfaction_trend = str(
+        data.get("satisfaction_trend", "Stable")
     ).strip().capitalize()
 
     try:
         frustration_level = int(
-            data.get("frustration_level", 1)
+            data.get("frustration_level", 0)
         )
     except (TypeError, ValueError):
-        frustration_level = 1
+        frustration_level = 0
 
     try:
-        confidence_score = int(
-            data.get("confidence_score", 0)
+        confidence = float(
+            data.get("confidence", 0.0)
         )
     except (TypeError, ValueError):
-        confidence_score = 0
+        confidence = 0.0
 
+    # Task 4 requires frustration level from 0 to 10.
     frustration_level = max(
-        1,
+        0,
         min(frustration_level, 10),
     )
 
-    confidence_score = max(
-        0,
-        min(confidence_score, 100),
+    # Task 4 confidence is represented from 0 to 1.
+    confidence = max(
+        0.0,
+        min(confidence, 1.0),
     )
 
     allowed_sentiments = {
@@ -82,26 +89,43 @@ def validate_analysis(data: dict) -> dict:
     }
 
     allowed_emotions = {
-        "Calm",
-        "Concerned",
+        # Task 4 emotion categories
+        "Happy",
+        "Neutral",
+        "Confused",
+        "Worried",
         "Frustrated",
         "Angry",
-        "Happy",
         "Satisfied",
+
+        # Backward-compatible categories already used
+        # by the existing implementation.
+        "Calm",
+        "Concerned",
+    }
+
+    allowed_satisfaction_trends = {
+        "Improving",
+        "Declining",
+        "Stable",
     }
 
     if sentiment not in allowed_sentiments:
         sentiment = "Neutral"
 
     if emotion not in allowed_emotions:
-        emotion = "Calm"
+        emotion = "Neutral"
+
+    if satisfaction_trend not in allowed_satisfaction_trends:
+        satisfaction_trend = "Stable"
 
     return {
         "intent": intent,
         "sentiment": sentiment,
         "emotion": emotion,
         "frustration_level": frustration_level,
-        "confidence_score": confidence_score,
+        "satisfaction_trend": satisfaction_trend,
+        "confidence": round(confidence, 2),
     }
 
 
@@ -147,12 +171,21 @@ def build_analysis_prompt(
     return f"""
 You are an AI customer support conversation analysis agent.
 
-Your task is to analyze the customer's current issue
-and emotional state from the conversation below.
+Your task is to analyze the customer's current issue,
+emotional state, frustration, sentiment, and satisfaction
+trend from the complete conversation below.
 
 Analyze ONLY the information present in the conversation.
 
 Do not invent facts.
+
+IMPORTANT:
+
+You must consider the conversation history when making
+the analysis.
+
+Do not analyze the latest customer message completely
+independently from previous messages.
 
 CONVERSATION
 ------------
@@ -163,11 +196,12 @@ RETURN EXACTLY ONE JSON OBJECT
 Use this structure:
 
 {{
-    "intent": "Payment Issue",
+    "intent": "Refund Request",
     "sentiment": "Negative",
     "emotion": "Frustrated",
     "frustration_level": 8,
-    "confidence_score": 92
+    "satisfaction_trend": "Declining",
+    "confidence": 0.94
 }}
 
 FIELD RULES
@@ -176,36 +210,65 @@ FIELD RULES
 
 Identify the customer's main support intent.
 
-Examples:
-- Payment Issue
+Common intents include:
+
 - Refund Request
-- Delayed Order
 - Order Cancellation
+- Delayed Order
+- Payment Issue
 - Account Issue
 - Delivery Issue
-- Technical Issue
+- Return or Exchange
+- Complaint
+- General Inquiry
+
+Use the intent that best represents what the
+customer is currently trying to resolve.
 
 Do not create an unrelated intent.
 
 2. sentiment
 
 Choose exactly one:
+
 - Positive
 - Neutral
 - Negative
 
+Analyze the customer's current overall sentiment
+based on the conversation.
+
 3. emotion
 
 Choose exactly one:
-- Calm
-- Concerned
+
+- Happy
+- Neutral
+- Confused
+- Worried
 - Frustrated
 - Angry
-- Happy
 - Satisfied
 
 Use Happy when the customer expresses
 happiness, excitement, appreciation, or delight.
+
+Use Neutral when the customer is calm and does not
+show a clearly identifiable positive, negative, or
+strong emotional state.
+
+Use Confused when the customer appears uncertain,
+does not understand a process, or asks for clarification.
+
+Use Worried when the customer expresses concern,
+anxiety, or uncertainty about a problem but is not
+strongly frustrated or angry.
+
+Use Frustrated when the customer shows clear
+annoyance, repeated complaints, or dissatisfaction.
+
+Use Angry when the customer shows strong anger,
+hostility, or severe dissatisfaction.
 
 Use Satisfied when the customer clearly indicates
 that their issue has been resolved or they are
@@ -213,9 +276,10 @@ satisfied with the support provided.
 
 4. frustration_level
 
-Give a number from 1 to 10.
+Give an integer from 0 to 10.
 
 Consider:
+
 - customer's wording
 - repeated complaints
 - urgency
@@ -223,37 +287,119 @@ Consider:
 - money/payment problems
 - previous failed attempts
 - dissatisfaction with support
+- escalation requests
 
 For a happy or satisfied customer, the frustration
 level should normally be low.
 
-1 means very calm, happy, or satisfied.
+0 means no meaningful frustration.
 
 10 means extremely frustrated or angry.
 
-5. confidence_score
+5. satisfaction_trend
 
-Give a number from 0 to 100 representing how confident
-you are in this analysis.
+Analyze the conversation history and determine
+whether customer satisfaction is currently:
+
+- Improving
+- Declining
+- Stable
+
+Use Improving when:
+
+- the customer's issue appears to be getting resolved
+- the support response is helpful
+- the customer becomes more positive
+- frustration decreases
+- the customer expresses appreciation
+- the customer becomes happy or satisfied
+
+Use Declining when:
+
+- the issue remains unresolved
+- support responses are unhelpful
+- the customer becomes more frustrated
+- the customer repeats complaints
+- the customer becomes more negative
+- the customer asks for escalation
+- frustration increases
+
+Use Stable when:
+
+- there is no clear improvement or decline
+- the customer's emotional state remains relatively
+  unchanged
+- the conversation does not provide enough evidence
+  for a meaningful change in satisfaction
+
+IMPORTANT:
+
+Satisfaction trend is about the CHANGE in the
+customer's satisfaction across the conversation.
+
+Do not determine the trend only from one message.
+
+Examples:
+
+Customer starts concerned and later says:
+"Thank you, that solves my problem."
+
+Result:
+"satisfaction_trend": "Improving"
+
+Customer starts frustrated and later says:
+"I have explained this three times and nobody is
+helping me."
+
+Result:
+"satisfaction_trend": "Declining"
+
+Customer remains calm and continues asking normal
+questions without a clear change:
+
+Result:
+"satisfaction_trend": "Stable"
+
+6. confidence
+
+Give a decimal number from 0 to 1 representing
+how confident you are in this analysis.
 
 Consider:
+
 - how clearly the customer describes the problem
 - how much relevant conversation evidence exists
 - whether the intent is obvious
-- whether sentiment and emotion are clearly expressed
+- whether sentiment is clearly expressed
+- whether emotion is clearly expressed
+- whether there is enough conversation history to
+  determine satisfaction trend
 
 Do NOT always return the same score.
 
 For example:
+
 - Very clear issue and strong evidence -> high confidence
+  such as 0.90 to 1.00
 - Somewhat unclear issue -> medium confidence
+  such as 0.60 to 0.89
 - Very vague message -> low confidence
+  such as 0.00 to 0.59
 
 IMPORTANT
 
 If the customer becomes happy or satisfied after
 receiving a helpful support response, reflect that
-change in sentiment and emotion.
+change in sentiment, emotion, frustration level,
+and satisfaction trend.
+
+If the customer becomes increasingly frustrated
+because the issue remains unresolved, reflect that
+change in sentiment, emotion, frustration level,
+and satisfaction trend.
+
+The analysis must change according to the actual
+conversation.
 
 Return ONLY valid JSON.
 

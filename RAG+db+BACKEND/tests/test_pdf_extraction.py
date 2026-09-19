@@ -1,14 +1,22 @@
+from pathlib import Path
+
 from app.services.pdf_service import extract_text_from_pdf
 
 
-pdf_path = "data/documents/refund_policy_v1.pdf"
+PDF_PATH = Path("data/documents/Refund_policy_v2.pdf")
 
-pages = extract_text_from_pdf(pdf_path)
 
-print(f"Total pages: {len(pages)}")
+def test_extract_text_from_pdf():
+    assert PDF_PATH.exists(), f"Test PDF not found: {PDF_PATH}"
 
-for page in pages:
-    print("\n--------------------")
-    print(f"Page: {page['page_number']}")
-    print("--------------------")
-    print(page["text"][:500])
+    pages = extract_text_from_pdf(str(PDF_PATH))
+
+    assert pages is not None
+    assert len(pages) > 0
+
+    for page in pages:
+        assert "page_number" in page
+        assert "text" in page
+        assert page["page_number"] >= 1
+        assert isinstance(page["text"], str)
+        assert page["text"].strip()

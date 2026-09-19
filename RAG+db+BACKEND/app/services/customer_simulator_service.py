@@ -88,6 +88,15 @@ EMOTIONS = [
 ]
 
 
+SATISFACTION_LEVELS = [
+    "Satisfied",
+    "Partially Satisfied",
+    "Neutral",
+    "Partially Dissatisfied",
+    "Dissatisfied",
+]
+
+
 def clamp(value: int, minimum: int, maximum: int) -> int:
     return max(minimum, min(value, maximum))
 
@@ -181,6 +190,10 @@ def calculate_emotion_change(
         "just wait",
         "wait",
         "not my responsibility",
+        "can't help",
+        "cannot help",
+        "unable to help",
+        "unable to assist",
     ]
 
     positive_count = sum(
@@ -225,67 +238,260 @@ def calculate_emotion_change(
 
 def detect_satisfaction(
     support_response: str,
+    customer_message: str,
+    previous_status: str,
     previous_score: int,
     new_score: int,
 ) -> str:
-    text = support_response.lower()
+    """
+    Calculate the customer's current satisfaction using:
 
-    resolution_signals = [
-        "resolved",
+    1. Previous satisfaction state
+    2. Latest support response
+    3. Latest customer response
+    4. Current emotional intensity
+
+    Satisfaction is intentionally gradual. A single helpful response
+    should not immediately make a frustrated customer fully satisfied.
+    """
+
+    support_text = support_response.lower()
+    customer_text = customer_message.lower()
+
+    # Normalize old values so existing sessions do not keep
+    # the old "unsatisfied" state.
+    status_aliases = {
+        "satisfied": "Satisfied",
+        "partially satisfied": "Partially Satisfied",
+        "neutral": "Neutral",
+        "partially dissatisfied": "Partially Dissatisfied",
+        "dissatisfied": "Dissatisfied",
+        "unsatisfied": "Partially Dissatisfied",
+    }
+
+    current_status = status_aliases.get(
+        previous_status,
+        "Neutral"
+    )
+
+    satisfaction_score = {
+        "Satisfied": 80,
+        "Partially Satisfied": 60,
+        "Neutral": 50,
+        "Partially Dissatisfied": 35,
+        "Dissatisfied": 15,
+    }[current_status]
+
+    positive_support_signals = [
+        "successfully processed",
+        "successfully completed",
+        "successfully resolved",
+        "refund has been processed",
+        "refund has been approved",
+        "refund is processed",
+        "refund is approved",
+        "issue has been resolved",
         "issue is resolved",
-        "successfully",
-        "completed",
-        "processed",
-        "fixed",
-        "refund has been",
-        "refund is",
-        "cancellation is confirmed",
-        "cancelled successfully",
+        "request has been completed",
         "payment has been reversed",
         "payment was reversed",
-        "request has been completed",
+        "confirmed",
+        "verified",
+        "i have checked",
+        "i have verified",
+        "i have submitted",
+        "i have processed",
     ]
 
-    appreciation_signals = [
+    helpful_support_signals = [
+        "sorry",
+        "apologize",
+        "understand your concern",
+        "help you",
+        "assist you",
+        "check this",
+        "look into",
+        "please provide",
+        "here is",
+        "next step",
+        "take care",
+    ]
+
+    negative_support_signals = [
+        "can't help",
+        "cannot help",
+        "unable to help",
+        "unable to assist",
+        "nothing i can do",
+        "not possible",
+        "not my responsibility",
+        "don't know",
+        "do not know",
+        "just wait",
+        "wait",
+        "your problem",
+        "not our problem",
+        "cannot do anything",
+    ]
+
+    customer_positive_signals = [
         "thank you",
+        "thanks",
+        "appreciate",
+        "that's helpful",
+        "that helps",
+        "sounds good",
+        "perfect",
+        "great",
+        "good",
         "glad",
         "happy",
-        "appreciate",
-        "you're all set",
-        "all set",
+        "relieved",
+        "all good",
+        "that's fine",
     ]
 
-    resolution_count = sum(
+    customer_negative_signals = [
+        "still nothing",
+        "nothing yet",
+        "nothing in my inbox",
+        "not showing up",
+        "hasn't arrived",
+        "has not arrived",
+        "still waiting",
+        "why is it not",
+        "why isn't",
+        "why is this taking",
+        "waste my time",
+        "wasting my time",
+        "refreshing",
+        "immediately",
+        "right now",
+        "tell me why",
+        "not working",
+        "doesn't work",
+        "does not work",
+        "not resolved",
+        "still unresolved",
+        "not fixed",
+        "not processed",
+        "didn't work",
+        "did not work",
+        "are you going to answer",
+    ]
+
+    strong_negative_customer_signals = [
+        "still nothing",
+        "nothing in my inbox",
+        "refreshing every second",
+        "waste my time",
+        "wasting my time",
+        "tell me why it's not showing",
+        "tell me why it is not showing",
+        "are you going to answer",
+    ]
+
+    positive_resolution_count = sum(
         1
-        for signal in resolution_signals
-        if signal in text
+        for signal in positive_support_signals
+        if signal in support_text
     )
 
-    appreciation_count = sum(
+    helpful_count = sum(
         1
-        for signal in appreciation_signals
-        if signal in text
+        for signal in helpful_support_signals
+        if signal in support_text
     )
 
-    if (
-        resolution_count > 0
-        and new_score <= 30
-    ):
-        return "satisfied"
+    negative_support_count = sum(
+        1
+        for signal in negative_support_signals
+        if signal in support_text
+    )
 
-    if (
-        appreciation_count > 0
-        and new_score <= 25
-    ):
-        return "satisfied"
+    customer_positive_count = sum(
+        1
+        for signal in customer_positive_signals
+        if signal in customer_text
+    )
 
-    if (
-        new_score < previous_score - 8
-        and new_score <= 25
-    ):
-        return "satisfied"
+    customer_negative_count = sum(
+        1
+        for signal in customer_negative_signals
+        if signal in customer_text
+    )
 
-    return "unsatisfied"
+    strong_negative_count = sum(
+        1
+        for signal in strong_negative_customer_signals
+        if signal in customer_text
+    )
+
+    # Customer feedback has priority because it directly tells us
+    # whether the customer feels the issue is actually resolved.
+    if strong_negative_count > 0:
+        satisfaction_score -= 20
+
+    elif customer_negative_count > 0:
+        satisfaction_score -= min(
+            15,
+            customer_negative_count * 5
+        )
+
+    # Helpful support responses provide gradual recovery.
+    if positive_resolution_count > 0:
+        satisfaction_score += 15
+
+    elif helpful_count > 0:
+        satisfaction_score += 8
+
+    # Explicitly bad support responses cause a stronger decline.
+    if negative_support_count > 0:
+        satisfaction_score -= min(
+            20,
+            negative_support_count * 8
+        )
+
+    # Emotion score is another supporting signal, not the only signal.
+    if new_score >= 75:
+        satisfaction_score -= 12
+
+    elif new_score >= 60:
+        satisfaction_score -= 7
+
+    elif new_score <= 20:
+        satisfaction_score += 8
+
+    elif new_score <= 35:
+        satisfaction_score += 3
+
+    # A customer explicitly expressing appreciation should recover
+    # satisfaction, but not necessarily jump directly to Satisfied.
+    if customer_positive_count > 0:
+        satisfaction_score += min(
+            10,
+            customer_positive_count * 5
+        )
+
+    satisfaction_score = clamp(
+        satisfaction_score,
+        0,
+        100
+    )
+
+    if satisfaction_score >= 75:
+        return "Satisfied"
+
+    if satisfaction_score >= 55:
+        return "Partially Satisfied"
+
+    if satisfaction_score >= 45:
+        return "Neutral"
+
+    if satisfaction_score >= 25:
+        return "Partially Dissatisfied"
+
+    return "Dissatisfied"
 
 
 def build_initial_emotion_score(
@@ -301,6 +507,30 @@ def build_initial_emotion_score(
     }
 
     return scores[initial_emotion]
+
+
+def build_initial_satisfaction(
+    initial_emotion: str,
+) -> str:
+    if initial_emotion in {
+        "happy",
+        "satisfied",
+    }:
+        return "Satisfied"
+
+    if initial_emotion == "calm":
+        return "Neutral"
+
+    if initial_emotion == "concerned":
+        return "Partially Dissatisfied"
+
+    if initial_emotion == "frustrated":
+        return "Partially Dissatisfied"
+
+    if initial_emotion == "angry":
+        return "Dissatisfied"
+
+    return "Neutral"
 
 
 def create_session(
@@ -346,13 +576,8 @@ def create_session(
         or "A fair resolution to the issue."
     )
 
-    satisfaction_status = (
-        "satisfied"
-        if initial_emotion in {
-            "happy",
-            "satisfied",
-        }
-        else "unsatisfied"
+    satisfaction_status = build_initial_satisfaction(
+        initial_emotion
     )
 
     return {
@@ -603,16 +828,17 @@ def update_session_after_response(
 
     satisfaction_status = detect_satisfaction(
         support_response=support_response,
+        customer_message=customer_message,
+        previous_status=session["satisfaction_status"],
         previous_score=previous_score,
         new_score=new_score,
     )
 
-    session["satisfaction_status"] = (
-        satisfaction_status
-    )
+    session["satisfaction_status"] = satisfaction_status
 
-    if satisfaction_status == "satisfied":
+    if satisfaction_status == "Satisfied":
         session["current_emotion"] = "satisfied"
+
     else:
         session["current_emotion"] = emotion_from_score(
             new_score

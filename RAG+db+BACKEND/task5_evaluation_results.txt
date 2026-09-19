@@ -1,0 +1,189 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.11, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\user\Desktop\AI-Coaching-Agent\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\user\Desktop\AI-Coaching-Agent\RAG+db+BACKEND
+plugins: anyio-4.14.2
+collecting ... collected 3 items
+
+tests/test_knowledge_recommendation_evaluation.py::test_knowledge_recommendation_evaluation Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 55.734333917s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '55s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 40.555264305s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-3.5-flash', 'location': 'global'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '40s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 20.302895034s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '20s'}]}}
+Primary Gemini model failed (attempt 2/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 16.438834845s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '16s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 59.28858889s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '59s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 42.424222867s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '42s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 38.058007174s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '38s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 18.656813362s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '18s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 3.974573393s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '3s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 50.698045155s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '50s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 38.880980704s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '38s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+
+================================================================================
+TASK 5 - KNOWLEDGE RECOMMENDATION EVALUATION
+================================================================================
+
+--------------------------------------------------------------------------------
+Scenario: Refund request
+Query: I want to know if I can get a refund for my order.
+Hit@5: PASS
+Matched keywords: ['refund']
+Relevant sources: 3
+Irrelevant sources: 2
+Retrieved sources:
+  1. constumer_support_faq | faq | distance=0.7502292394638062
+  2. refund_policy | Policy | distance=0.948011040687561
+  3. refund_polcy | policy | distance=0.948011040687561
+  4. test_refund_policy | policy | distance=0.9567165374755859
+  5. FAQ  | policy | distance=0.8360766172409058
+
+--------------------------------------------------------------------------------
+Scenario: Order cancellation
+Query: I want to cancel my order.
+Hit@5: PASS
+Matched keywords: ['cancel']
+Relevant sources: 5
+Irrelevant sources: 0
+Retrieved sources:
+  1. Cancel policy | policy | distance=0.7928016781806946
+  2. Cancel policy | policy | distance=0.8256545662879944
+  3. Cancel policy | policy | distance=0.8299940228462219
+  4. Cancel policy | policy | distance=0.8372175693511963
+  5. Cancel policy | policy | distance=0.8808420300483704
+
+--------------------------------------------------------------------------------
+Scenario: Delayed order
+Query: My order is delayed and has not arrived yet.
+Hit@5: PASS
+Matched keywords: ['delivery', 'order']
+Relevant sources: 5
+Irrelevant sources: 0
+Retrieved sources:
+  1. Order policy | policy | distance=0.9786005616188049
+  2. Order policy | policy | distance=1.0471433401107788
+  3. Order policy | policy | distance=1.0472099781036377
+  4. Order policy | policy | distance=1.0479837656021118
+  5. Delivery policy | policy | distance=0.9254640340805054
+
+--------------------------------------------------------------------------------
+Scenario: Payment issue
+Query: My payment was deducted but the order is not showing.
+Hit@5: PASS
+Matched keywords: ['payment']
+Relevant sources: 3
+Irrelevant sources: 2
+Retrieved sources:
+  1. Payment policy | policy | distance=1.0671463012695312
+  2. Order policy | policy | distance=1.173180341720581
+  3. Test Policy | policy | distance=1.0878734588623047
+  4. Payment policy | policy | distance=1.2507600784301758
+  5. Payment policy | policy | distance=1.2539983987808228
+
+--------------------------------------------------------------------------------
+Scenario: Account issue
+Query: I cannot access my account.
+Hit@5: MISS
+Matched keywords: []
+Relevant sources: 0
+Irrelevant sources: 5
+Retrieved sources:
+  1. Test Policy | policy | distance=1.19851553440094
+  2. constumer_support_faq | faq | distance=1.2600618600845337
+  3. Fraud policy | policy | distance=1.5102229118347168
+  4. Test Policy | policy | distance=1.5173860788345337
+  5. FAQ  | policy | distance=1.5862693786621094
+
+--------------------------------------------------------------------------------
+Scenario: Delivery issue
+Query: My package was supposed to arrive today but it has not arrived.
+Hit@5: PASS
+Matched keywords: ['delivery', 'order']
+Relevant sources: 5
+Irrelevant sources: 0
+Retrieved sources:
+  1. Delivery policy | policy | distance=1.2124474048614502
+  2. Delivery policy | policy | distance=1.2389012575149536
+  3. Order policy | policy | distance=1.2471359968185425
+  4. Delivery policy | policy | distance=1.2574539184570312
+  5. Delivery policy | policy | distance=1.2750662565231323
+
+--------------------------------------------------------------------------------
+Scenario: Return or exchange
+Query: I want to return this product and exchange it for another one.
+Hit@5: PASS
+Matched keywords: ['return']
+Relevant sources: 5
+Irrelevant sources: 0
+Retrieved sources:
+  1. Return policy | policy | distance=1.0534507036209106
+  2. Return policy | policy | distance=1.0750536918640137
+  3. Return policy | policy | distance=1.0809611082077026
+  4. Return policy | policy | distance=1.1290627717971802
+  5. Return policy | policy | distance=1.1364684104919434
+
+--------------------------------------------------------------------------------
+Scenario: Refund process inquiry
+Query: Could you explain how your refund process works?
+Hit@5: PASS
+Matched keywords: ['refund']
+Relevant sources: 4
+Irrelevant sources: 1
+Retrieved sources:
+  1. test_refund_policy | policy | distance=0.6775180697441101
+  2. refund_policy | Policy | distance=0.7106801271438599
+  3. refund_polcy | policy | distance=0.7106801271438599
+  4. Payment policy | policy | distance=0.6355175375938416
+  5. refund_policy | Policy | distance=0.7993036508560181
+
+--------------------------------------------------------------------------------
+Scenario: Frustrated customer
+Query: This is extremely frustrating. Nobody has helped me.
+Hit@5: PASS
+Matched keywords: ['faq', 'support']
+Relevant sources: 2
+Irrelevant sources: 3
+Retrieved sources:
+  1. Test Policy | policy | distance=1.3126469850540161
+  2. constumer_support_faq | faq | distance=1.4190841913223267
+  3. FAQ  | policy | distance=1.6380951404571533
+  4. Order policy | policy | distance=1.6701959371566772
+  5. Test Policy | policy | distance=1.6778773069381714
+
+--------------------------------------------------------------------------------
+Scenario: Multi-turn refund conversation
+Query: I am still waiting. What information do I need to provide?
+Hit@5: PASS
+Matched keywords: ['return']
+Relevant sources: 1
+Irrelevant sources: 4
+Retrieved sources:
+  1. FAQ  | policy | distance=0.8048509359359741
+  2. Return policy | policy | distance=0.8380913138389587
+  3. Delivery policy | policy | distance=0.8529053926467896
+  4. FAQ  | policy | distance=0.8664647340774536
+  5. FAQ  | policy | distance=0.8786121010780334
+
+================================================================================
+OVERALL EVALUATION
+================================================================================
+Total scenarios: 10
+Hit@5: 9/10 (90.00%)
+Relevant sources: 33
+Irrelevant sources: 17
+Source relevance rate: 66.00%
+================================================================================
+PASSED
+tests/test_knowledge_recommendation_evaluation.py::test_no_customer_message PASSED
+tests/test_knowledge_recommendation_evaluation.py::test_previous_conversation_context_is_used Primary Gemini model failed (attempt 1/2): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\nPlease retry in 27.229340351s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-3.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '27s'}]}}
+Trying fallback Gemini model: gemini-3.5-flash-lite
+PASSED
+
+======================== 3 passed in 232.21s (0:03:52) ========================

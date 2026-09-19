@@ -7,6 +7,7 @@ import ManualMode from "./components/ManualMode";
 import ReplayMode from "./components/ReplayMode";
 import Header from "./components/Header";
 import UserManagement from "./components/UserManagement";
+import KnowledgeBase from "./components/KnowledgeBase";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,6 +15,8 @@ function App() {
   const [selectedMode, setSelectedMode] = useState(null);
   const [showRegister, setShowRegister] = useState(false);
   const [showUserManagement, setShowUserManagement] =
+    useState(false);
+  const [showKnowledgeBase, setShowKnowledgeBase] =
     useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
 
@@ -97,6 +100,9 @@ function App() {
     setUser(loginData);
     setIsLoggedIn(true);
     setShowRegister(false);
+    setSelectedMode(null);
+    setShowUserManagement(false);
+    setShowKnowledgeBase(false);
   };
 
   // =========================
@@ -112,6 +118,7 @@ function App() {
     setSelectedMode(null);
     setShowRegister(false);
     setShowUserManagement(false);
+    setShowKnowledgeBase(false);
   };
 
   // =========================
@@ -121,11 +128,13 @@ function App() {
   const handleModeSelect = (mode) => {
     setSelectedMode(mode);
     setShowUserManagement(false);
+    setShowKnowledgeBase(false);
   };
 
   const handleBackToModes = () => {
     setSelectedMode(null);
     setShowUserManagement(false);
+    setShowKnowledgeBase(false);
   };
 
   // =========================
@@ -185,10 +194,26 @@ function App() {
   }
 
   // =========================
-  // User Management
+  // Role Permissions
+  // =========================
+
+  const isAdmin = user?.role === "admin";
+  const isEmployee = user?.role === "employee";
+  const isCustomer = user?.role === "customer";
+
+  const canAccessKnowledgeBase =
+    isAdmin || isEmployee;
+
+  // =========================
+  // Admin: User Management
   // =========================
 
   if (showUserManagement) {
+    if (!isAdmin) {
+      setShowUserManagement(false);
+      return null;
+    }
+
     return (
       <div className="app">
         <Header
@@ -209,7 +234,37 @@ function App() {
   }
 
   // =========================
-  // Authenticated Application
+  // Admin / Employee:
+  // Knowledge Base
+  // =========================
+
+  if (showKnowledgeBase) {
+    if (!canAccessKnowledgeBase) {
+      setShowKnowledgeBase(false);
+      return null;
+    }
+
+    return (
+      <div className="app">
+        <Header
+          user={user}
+          onLogout={handleLogout}
+        />
+
+        <main className="main-content">
+          <KnowledgeBase
+            user={user}
+            onBack={() =>
+              setShowKnowledgeBase(false)
+            }
+          />
+        </main>
+      </div>
+    );
+  }
+
+  // =========================
+  // Main Application
   // =========================
 
   return (
@@ -220,22 +275,52 @@ function App() {
       />
 
       <main className="main-content">
-        {user?.role === "admin" && (
+
+        {/* =========================
+            ADMIN / EMPLOYEE CONTROLS
+            ========================= */}
+
+        {(isAdmin || isEmployee) && (
           <div className="admin-actions">
+
+            {/* Admin only */}
+            {isAdmin && (
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => {
+                  setShowUserManagement(true);
+                  setShowKnowledgeBase(false);
+                  setSelectedMode(null);
+                }}
+              >
+                User Management
+              </button>
+            )}
+
+            {/* Admin + Employee */}
             <button
               type="button"
               className="secondary-button"
-              onClick={() =>
-                setShowUserManagement(true)
-              }
+              onClick={() => {
+                setShowKnowledgeBase(true);
+                setShowUserManagement(false);
+                setSelectedMode(null);
+              }}
             >
-              User Management
+              Knowledge Base
             </button>
           </div>
         )}
 
+        {/* =========================
+            CUSTOMER / EMPLOYEE / ADMIN
+            SUPPORT MODES
+            ========================= */}
+
         {!selectedMode && (
           <ModeSelection
+            user={user}
             onSelectMode={handleModeSelect}
           />
         )}

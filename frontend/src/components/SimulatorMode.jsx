@@ -26,6 +26,9 @@ function SimulatorMode({ onBack }) {
   const [coaching, setCoaching] = useState(null);
   const [escalationRisk, setEscalationRisk] = useState(null);
 
+  const [activeCoachTab, setActiveCoachTab] =
+    useState("suggestions");
+
   const [isLoadingConfig, setIsLoadingConfig] = useState(true);
   const [isStarting, setIsStarting] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -55,7 +58,8 @@ function SimulatorMode({ onBack }) {
 
         if (!response.ok) {
           throw new Error(
-            data.detail || "Unable to load simulator configuration."
+            data.detail ||
+              "Unable to load simulator configuration."
           );
         }
 
@@ -85,7 +89,9 @@ function SimulatorMode({ onBack }) {
     if (token) {
       fetchConfig();
     } else {
-      setError("Authentication token not found. Please login again.");
+      setError(
+        "Authentication token not found. Please login again."
+      );
       setIsLoadingConfig(false);
     }
   }, [token]);
@@ -93,6 +99,7 @@ function SimulatorMode({ onBack }) {
   const resetConversation = () => {
     setSessionId(null);
     setMessages([]);
+
     setEmotion(initialEmotion);
     setEmotionScore(15);
     setTurnNumber(0);
@@ -103,6 +110,8 @@ function SimulatorMode({ onBack }) {
     setCoaching(null);
     setEscalationRisk(null);
 
+    setActiveCoachTab("suggestions");
+
     setSupportResponse("");
   };
 
@@ -110,6 +119,7 @@ function SimulatorMode({ onBack }) {
     setEmotion(data.state?.emotion || "calm");
     setEmotionScore(data.state?.emotion_score ?? 15);
     setTurnNumber(data.state?.turn_number ?? 0);
+
     setSatisfactionStatus(
       data.state?.satisfaction_status || "unsatisfied"
     );
@@ -139,7 +149,8 @@ function SimulatorMode({ onBack }) {
             scenario,
             issue_severity: Number(issueSeverity),
             patience_level: Number(patienceLevel),
-            expected_resolution: expectedResolution.trim(),
+            expected_resolution:
+              expectedResolution.trim(),
           }),
         }
       );
@@ -164,6 +175,7 @@ function SimulatorMode({ onBack }) {
 
       updateBackendResults(data);
       setSupportResponse("");
+      setActiveCoachTab("suggestions");
     } catch (error) {
       setError(
         error.message ||
@@ -237,6 +249,12 @@ function SimulatorMode({ onBack }) {
     }
   };
 
+  const handleUseSuggestedReply = () => {
+    if (coaching?.suggested_reply) {
+      setSupportResponse(coaching.suggested_reply);
+    }
+  };
+
   const handleBack = () => {
     resetConversation();
     onBack();
@@ -268,10 +286,18 @@ function SimulatorMode({ onBack }) {
 
   const getRiskClass = () => {
     if (!escalationRisk?.risk_level) {
-      return "";
+      return "low";
     }
 
     return escalationRisk.risk_level.toLowerCase();
+  };
+
+  const formatLabel = (value) => {
+    if (!value) {
+      return "Unknown";
+    }
+
+    return value.charAt(0).toUpperCase() + value.slice(1);
   };
 
   if (isLoadingConfig) {
@@ -291,7 +317,7 @@ function SimulatorMode({ onBack }) {
               SIMULATOR MODE
             </span>
 
-            <h1>Session Configuration</h1>
+            <h1>Practice a customer interaction</h1>
 
             <p>
               Loading customer simulator configuration...
@@ -302,286 +328,9 @@ function SimulatorMode({ onBack }) {
     );
   }
 
-  /*
-   * SESSION CONFIGURATION
-   *
-   * This screen is intentionally separate from the
-   * live conversation layout. The customer profile is
-   * configured here before the simulation starts.
-   */
-  if (!sessionId) {
-    return (
-      <section className="simulator-setup-page">
-        <div className="simulator-setup-container">
-          <div className="simulator-setup-heading">
-            <button
-              type="button"
-              className="back-button"
-              onClick={onBack}
-            >
-              ← Back
-            </button>
-
-            <div className="simulator-setup-title">
-              <span className="eyebrow">
-                SESSION CONFIGURATION
-              </span>
-
-              <h1>Set up your customer</h1>
-
-              <p>
-                Configure the customer profile before
-                starting the simulation.
-              </p>
-            </div>
-          </div>
-
-          {error && (
-            <p className="login-error setup-error">
-              {error}
-            </p>
-          )}
-
-          <div className="simulator-setup-card">
-            <div className="setup-section">
-              <div className="setup-section-heading">
-                <span className="setup-step">01</span>
-
-                <div>
-                  <h2>Customer Profile</h2>
-                  <p>
-                    Define who the simulated customer is.
-                  </p>
-                </div>
-              </div>
-
-              <div className="setup-form">
-                <div className="setup-field">
-                  <label htmlFor="persona">
-                    Customer Persona
-                  </label>
-
-                  <select
-                    id="persona"
-                    value={persona}
-                    onChange={(event) =>
-                      setPersona(event.target.value)
-                    }
-                    disabled={isStarting}
-                  >
-                    {config?.personas?.map((item) => (
-                      <option
-                        key={item.id}
-                        value={item.id}
-                      >
-                        {item.id.charAt(0).toUpperCase() +
-                          item.id.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-
-                  {getPersonaDescription() && (
-                    <span className="setup-helper">
-                      {getPersonaDescription()}
-                    </span>
-                  )}
-                </div>
-
-                <div className="setup-field">
-                  <label htmlFor="initial-emotion">
-                    Starting Emotion
-                  </label>
-
-                  <select
-                    id="initial-emotion"
-                    value={initialEmotion}
-                    onChange={(event) =>
-                      setInitialEmotion(event.target.value)
-                    }
-                    disabled={isStarting}
-                  >
-                    {config?.emotions?.map((item) => (
-                      <option
-                        key={item}
-                        value={item}
-                      >
-                        {item.charAt(0).toUpperCase() +
-                          item.slice(1)}
-                      </option>
-                    ))}
-                  </select>
-
-                  <span className="setup-helper">
-                    Determines the customer's initial
-                    emotional state.
-                  </span>
-                </div>
-
-                <div className="setup-field">
-                  <label htmlFor="scenario">
-                    Customer Scenario
-                  </label>
-
-                  <select
-                    id="scenario"
-                    value={scenario}
-                    onChange={(event) =>
-                      setScenario(event.target.value)
-                    }
-                    disabled={isStarting}
-                  >
-                    {config?.scenarios?.map((item) => (
-                      <option
-                        key={item.id}
-                        value={item.id}
-                      >
-                        {item.title}
-                      </option>
-                    ))}
-                  </select>
-
-                  {getScenarioDescription() && (
-                    <span className="setup-helper">
-                      {getScenarioDescription()}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="setup-divider" />
-
-            <div className="setup-section">
-              <div className="setup-section-heading">
-                <span className="setup-step">02</span>
-
-                <div>
-                  <h2>Interaction Conditions</h2>
-                  <p>
-                    Control the difficulty and customer
-                    behavior during the simulation.
-                  </p>
-                </div>
-              </div>
-
-              <div className="setup-form">
-                <div className="setup-field">
-                  <div className="range-label-row">
-                    <label htmlFor="issue-severity">
-                      Issue Severity
-                    </label>
-
-                    <strong>
-                      {issueSeverity}/5
-                    </strong>
-                  </div>
-
-                  <input
-                    id="issue-severity"
-                    className="setup-range"
-                    type="range"
-                    min={config?.issue_severity?.min || 1}
-                    max={config?.issue_severity?.max || 5}
-                    value={issueSeverity}
-                    onChange={(event) =>
-                      setIssueSeverity(event.target.value)
-                    }
-                    disabled={isStarting}
-                  />
-
-                  <div className="range-scale">
-                    <span>Low</span>
-                    <span>High</span>
-                  </div>
-                </div>
-
-                <div className="setup-field">
-                  <div className="range-label-row">
-                    <label htmlFor="patience-level">
-                      Customer Patience
-                    </label>
-
-                    <strong>
-                      {patienceLevel}%
-                    </strong>
-                  </div>
-
-                  <input
-                    id="patience-level"
-                    className="setup-range"
-                    type="range"
-                    min={config?.patience_level?.min || 1}
-                    max={config?.patience_level?.max || 100}
-                    value={patienceLevel}
-                    onChange={(event) =>
-                      setPatienceLevel(event.target.value)
-                    }
-                    disabled={isStarting}
-                  />
-
-                  <div className="range-scale">
-                    <span>Impatient</span>
-                    <span>Patient</span>
-                  </div>
-                </div>
-
-                <div className="setup-field">
-                  <label htmlFor="expected-resolution">
-                    Expected Resolution
-                  </label>
-
-                  <textarea
-                    id="expected-resolution"
-                    rows="4"
-                    placeholder="What does the customer expect from the support agent?"
-                    value={expectedResolution}
-                    onChange={(event) =>
-                      setExpectedResolution(event.target.value)
-                    }
-                    disabled={isStarting}
-                  />
-
-                  <span className="setup-helper">
-                    Define the outcome the customer expects
-                    from the interaction.
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="setup-footer">
-              <div className="setup-footer-info">
-                <span className="setup-footer-dot" />
-
-                <span>
-                  Your selections will remain fixed during
-                  the simulation.
-                </span>
-              </div>
-
-              <button
-                type="button"
-                className="primary-button setup-start-button"
-                onClick={handleStartSimulation}
-                disabled={
-                  isStarting ||
-                  !expectedResolution.trim()
-                }
-              >
-                {isStarting
-                  ? "Starting Simulation..."
-                  : "Start Simulation →"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="interaction-page">
-      <div className="interaction-heading">
+    <section className="interaction-page simulator-page">
+      <div className="interaction-heading simulator-heading">
         <button
           type="button"
           className="back-button"
@@ -591,7 +340,7 @@ function SimulatorMode({ onBack }) {
         </button>
 
         <div>
-          <span className="eyebrow">
+          <span className="eyebrow simulator-eyebrow">
             SIMULATOR MODE
           </span>
 
@@ -605,304 +354,760 @@ function SimulatorMode({ onBack }) {
       </div>
 
       {error && (
-        <p className="login-error">
+        <div className="simulator-error">
           {error}
-        </p>
+        </div>
       )}
 
-      <div className="interaction-layout">
-        <aside className="settings-panel">
-          <h3>Customer Profile</h3>
-
-          <div className="active-session-badge">
-            <span />
-            Active
-          </div>
-
-          <div className="profile-detail">
-            <span>Persona</span>
-            <strong>
-              {persona.charAt(0).toUpperCase() +
-                persona.slice(1)}
-            </strong>
-          </div>
-
-          <div className="profile-detail">
-            <span>Scenario</span>
-            <strong>
-              {config?.scenarios?.find(
-                (item) => item.id === scenario
-              )?.title || "Customer Interaction"}
-            </strong>
-          </div>
-
-          <div className="profile-detail">
-            <span>Starting Emotion</span>
-            <strong>
-              {initialEmotion.charAt(0).toUpperCase() +
-                initialEmotion.slice(1)}
-            </strong>
-          </div>
-
-          <div className="profile-metrics">
-            <div>
-              <span>Issue Severity</span>
-              <strong>{issueSeverity}/5</strong>
-            </div>
-
-            <div>
-              <span>Patience</span>
-              <strong>{patienceLevel}%</strong>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="secondary-button full-width"
-            onClick={resetConversation}
-            disabled={isSending}
-          >
-            Start New Simulation
-          </button>
-        </aside>
-
-        <div className="conversation-panel">
-          <div className="conversation-header">
-            <div>
-              <span>Live Simulation</span>
-
-              <h3>
-                {config?.scenarios?.find(
-                  (item) => item.id === scenario
-                )?.title || "Customer Interaction"}
-              </h3>
-            </div>
-
-            <span className="status-dot">
-              {isSending ? "Thinking..." : "Live"}
-            </span>
-          </div>
-
-          <div className="simulator-state">
-            <div>
-              <span>Customer Emotion</span>
-              <strong>
-                {emotion.charAt(0).toUpperCase() +
-                  emotion.slice(1)}
-              </strong>
-            </div>
-
-            <div>
-              <span>Emotion Score</span>
-              <strong>
-                {emotionScore}/100
-              </strong>
-            </div>
-
-            <div>
-              <span>Turn</span>
-              <strong>
-                {turnNumber}
-              </strong>
-            </div>
-
-            <div>
-              <span>Satisfaction</span>
-              <strong>
-                {satisfactionStatus.charAt(0).toUpperCase() +
-                  satisfactionStatus.slice(1)}
-              </strong>
-            </div>
-          </div>
-
-          <div className="messages-area">
-            {messages.map((item) => (
-              <div
-                key={item.id}
-                className={`message ${
-                  item.sender === "customer"
-                    ? "customer-message"
-                    : "support-message"
-                }`}
-              >
-                <span className="message-label">
-                  {item.sender === "customer"
-                    ? "Customer"
-                    : "You"}
+      {!sessionId ? (
+        <div className="simulation-setup">
+          <aside className="settings-panel setup-profile-panel">
+            <div className="profile-header">
+              <div>
+                <span className="panel-eyebrow">
+                  CUSTOMER PROFILE
                 </span>
 
-                <p>{item.text}</p>
+                <h2>Set up your customer</h2>
               </div>
-            ))}
-          </div>
 
-          <div className="message-input-area">
-            <input
-              type="text"
-              placeholder="Your response..."
-              value={supportResponse}
-              onChange={(event) =>
-                setSupportResponse(event.target.value)
-              }
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" &&
-                  !event.shiftKey
-                ) {
-                  event.preventDefault();
-                  handleSendResponse();
+              <span className="ready-badge">
+                Ready
+              </span>
+            </div>
+
+            <p className="setup-description">
+              Configure the customer profile before
+              starting the simulation.
+            </p>
+
+            <div className="setup-form">
+              <div className="setup-field">
+                <label htmlFor="persona">
+                  Customer Persona
+                </label>
+
+                <select
+                  id="persona"
+                  value={persona}
+                  onChange={(event) =>
+                    setPersona(event.target.value)
+                  }
+                >
+                  {config?.personas?.map((item) => (
+                    <option
+                      key={item.id}
+                      value={item.id}
+                    >
+                      {formatLabel(item.id)}
+                    </option>
+                  ))}
+                </select>
+
+                <p className="field-description">
+                  {getPersonaDescription()}
+                </p>
+              </div>
+
+              <div className="setup-field">
+                <label htmlFor="initial-emotion">
+                  Starting Emotion
+                </label>
+
+                <select
+                  id="initial-emotion"
+                  value={initialEmotion}
+                  onChange={(event) =>
+                    setInitialEmotion(event.target.value)
+                  }
+                >
+                  {config?.emotions?.map((item) => (
+                    <option
+                      key={item}
+                      value={item}
+                    >
+                      {formatLabel(item)}
+                    </option>
+                  ))}
+                </select>
+
+                <p className="field-description">
+                  Determines the customer's initial
+                  emotional state.
+                </p>
+              </div>
+
+              <div className="setup-field">
+                <label htmlFor="scenario">
+                  Customer Scenario
+                </label>
+
+                <select
+                  id="scenario"
+                  value={scenario}
+                  onChange={(event) =>
+                    setScenario(event.target.value)
+                  }
+                >
+                  {config?.scenarios?.map((item) => (
+                    <option
+                      key={item.id}
+                      value={item.id}
+                    >
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+
+                <p className="field-description">
+                  {getScenarioDescription()}
+                </p>
+              </div>
+
+              <div className="setup-two-column">
+                <div className="setup-field">
+                  <div className="field-label-row">
+                    <label htmlFor="issue-severity">
+                      Issue Severity
+                    </label>
+
+                    <span>
+                      {issueSeverity}/5
+                    </span>
+                  </div>
+
+                  <input
+                    id="issue-severity"
+                    className="range-input"
+                    type="range"
+                    min={config?.issue_severity?.min || 1}
+                    max={config?.issue_severity?.max || 5}
+                    value={issueSeverity}
+                    onChange={(event) =>
+                      setIssueSeverity(
+                        Number(event.target.value)
+                      )
+                    }
+                  />
+
+                  <div className="range-labels">
+                    <span>Low</span>
+                    <span>High</span>
+                  </div>
+                </div>
+
+                <div className="setup-field">
+                  <div className="field-label-row">
+                    <label htmlFor="patience-level">
+                      Customer Patience
+                    </label>
+
+                    <span>
+                      {patienceLevel}%
+                    </span>
+                  </div>
+
+                  <input
+                    id="patience-level"
+                    className="range-input patience-range"
+                    type="range"
+                    min={
+                      config?.patience_level?.min || 1
+                    }
+                    max={
+                      config?.patience_level?.max || 100
+                    }
+                    value={patienceLevel}
+                    onChange={(event) =>
+                      setPatienceLevel(
+                        Number(event.target.value)
+                      )
+                    }
+                  />
+
+                  <div className="range-labels">
+                    <span>Impatient</span>
+                    <span>Patient</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="setup-field">
+                <label htmlFor="expected-resolution">
+                  Expected Resolution
+                </label>
+
+                <textarea
+                  id="expected-resolution"
+                  rows="4"
+                  placeholder="What does the customer expect?"
+                  value={expectedResolution}
+                  onChange={(event) =>
+                    setExpectedResolution(
+                      event.target.value
+                    )
+                  }
+                />
+              </div>
+
+              <button
+                type="button"
+                className="primary-button start-button"
+                onClick={handleStartSimulation}
+                disabled={
+                  isStarting ||
+                  !expectedResolution.trim()
                 }
-              }}
-              disabled={isSending}
-            />
+              >
+                {isStarting
+                  ? "Starting Simulation..."
+                  : "Start Simulation"}
+              </button>
+            </div>
+          </aside>
+
+          <div className="setup-preview">
+            <div className="setup-preview-inner">
+              <span className="preview-icon">
+                ◈
+              </span>
+
+              <span className="panel-eyebrow">
+                SIMULATOR PREVIEW
+              </span>
+
+              <h2>
+                Practice realistic customer
+                conversations
+              </h2>
+
+              <p>
+                The customer will respond dynamically
+                based on their persona, emotional state,
+                patience, and the support response you
+                provide.
+              </p>
+
+              <div className="preview-features">
+                <div>
+                  <strong>AI Customer</strong>
+                  <span>
+                    Dynamic multi-turn responses
+                  </span>
+                </div>
+
+                <div>
+                  <strong>Live Analysis</strong>
+                  <span>
+                    Intent, sentiment and emotion
+                  </span>
+                </div>
+
+                <div>
+                  <strong>AI Coaching</strong>
+                  <span>
+                    Guidance while you respond
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="simulation-workspace">
+          <aside className="settings-panel customer-profile-panel">
+            <div className="profile-header">
+              <div>
+                <span className="panel-eyebrow">
+                  ACTIVE SESSION
+                </span>
+
+                <h2>Customer Profile</h2>
+              </div>
+
+              <span className="active-badge">
+                <span />
+                Active
+              </span>
+            </div>
+
+            <div className="profile-details">
+              <div className="profile-item">
+                <span>Persona</span>
+                <strong>
+                  {formatLabel(persona)}
+                </strong>
+              </div>
+
+              <div className="profile-item">
+                <span>Scenario</span>
+                <strong>
+                  {config?.scenarios?.find(
+                    (item) => item.id === scenario
+                  )?.title || formatLabel(scenario)}
+                </strong>
+              </div>
+
+              <div className="profile-item">
+                <span>Starting Emotion</span>
+                <strong>
+                  {formatLabel(initialEmotion)}
+                </strong>
+              </div>
+
+              <div className="profile-two-column">
+                <div className="profile-item compact">
+                  <span>Issue Severity</span>
+                  <strong>
+                    {issueSeverity}/5
+                  </strong>
+                </div>
+
+                <div className="profile-item compact">
+                  <span>Patience</span>
+                  <strong>
+                    {patienceLevel}%
+                  </strong>
+                </div>
+              </div>
+            </div>
 
             <button
               type="button"
-              className="primary-button"
-              onClick={handleSendResponse}
-              disabled={
-                isSending ||
-                !supportResponse.trim()
-              }
+              className="secondary-button full-width new-session-button"
+              onClick={resetConversation}
+              disabled={isSending}
             >
-              {isSending ? "Sending..." : "Send"}
+              Start New Simulation
             </button>
-          </div>
+          </aside>
 
-          <div className="analysis-panel">
-            <div className="analysis-header">
-              <div>
-                <span className="eyebrow">
-                  AI COACH
+          <main className="conversation-panel">
+            <div className="simulation-overview">
+              <div className="conversation-header">
+                <div>
+                  <span className="live-label">
+                    LIVE SIMULATION
+                  </span>
+
+                  <h2>
+                    {config?.scenarios?.find(
+                      (item) => item.id === scenario
+                    )?.title ||
+                      "Customer Interaction"}
+                  </h2>
+                </div>
+
+                <span className="live-status">
+                  <span />
+                  Live
                 </span>
-
-                <h3>Conversation Analysis</h3>
               </div>
 
-              {analysis?.confidence_score !== undefined && (
-                <div className="confidence-score">
-                  <span>Confidence</span>
+              <div className="customer-state-header">
+                <div>
+                  <span className="state-eyebrow">
+                    CUSTOMER STATE
+                  </span>
+
+                  <p>
+                    Live customer profile
+                  </p>
+                </div>
+
+                <span className="turn-badge">
+                  Turn {turnNumber}
+                </span>
+              </div>
+
+              <div className="customer-state-grid">
+                <div className="state-card">
+                  <span>Emotion</span>
                   <strong>
-                    {analysis.confidence_score}%
+                    {formatLabel(emotion)}
                   </strong>
+                </div>
+
+                <div className="state-card">
+                  <span>Emotion Score</span>
+                  <strong>
+                    {emotionScore}
+                    <small>/100</small>
+                  </strong>
+                </div>
+
+                <div className="state-card">
+                  <span>Satisfaction</span>
+                  <strong>
+                    {formatLabel(
+                      satisfactionStatus
+                    )}
+                  </strong>
+                </div>
+
+                <div className="state-card">
+                  <span>Issue Severity</span>
+                  <strong>
+                    {issueSeverity}
+                    <small>/5</small>
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="messages-area">
+              {messages.map((item) => (
+                <div
+                  key={item.id}
+                  className={`message ${
+                    item.sender === "customer"
+                      ? "customer-message"
+                      : "support-message"
+                  }`}
+                >
+                  <span className="message-label">
+                    {item.sender === "customer"
+                      ? "Customer"
+                      : "You"}
+                  </span>
+
+                  <p>{item.text}</p>
+                </div>
+              ))}
+
+              {isSending && (
+                <div className="typing-indicator">
+                  <span />
+                  <span />
+                  <span />
+                  Customer is responding...
                 </div>
               )}
             </div>
 
-            {analysis && (
-              <div className="analysis-grid">
-                <div>
-                  <span>Intent</span>
-                  <strong>
-                    {analysis.intent || "Unknown"}
-                  </strong>
-                </div>
+            <div className="message-input-area">
+              <input
+                type="text"
+                placeholder="Type your response..."
+                value={supportResponse}
+                onChange={(event) =>
+                  setSupportResponse(event.target.value)
+                }
+                onKeyDown={(event) => {
+                  if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                  ) {
+                    event.preventDefault();
+                    handleSendResponse();
+                  }
+                }}
+                disabled={isSending}
+              />
+
+              <button
+                type="button"
+                className="primary-button send-button"
+                onClick={handleSendResponse}
+                disabled={
+                  isSending ||
+                  !supportResponse.trim()
+                }
+              >
+                {isSending ? "Sending..." : "Send"}
+              </button>
+            </div>
+          </main>
+
+          <aside className="ai-coach-panel">
+            <div className="coach-header">
+              <div>
+                <span className="coach-icon">
+                  ✦
+                </span>
 
                 <div>
-                  <span>Sentiment</span>
-                  <strong>
-                    {analysis.sentiment || "Neutral"}
-                  </strong>
-                </div>
+                  <span className="panel-eyebrow">
+                    AI COACH
+                  </span>
 
-                <div>
-                  <span>Emotion</span>
-                  <strong>
-                    {analysis.emotion || "Calm"}
-                  </strong>
-                </div>
-
-                <div>
-                  <span>Frustration</span>
-                  <strong>
-                    {analysis.frustration_level ?? 0}/10
-                  </strong>
+                  <h2>Real-time guidance</h2>
                 </div>
               </div>
-            )}
+            </div>
 
-            {escalationRisk && (
-              <div
-                className={`risk-panel ${getRiskClass()}`}
+            <div className="coach-tabs">
+              <button
+                type="button"
+                className={
+                  activeCoachTab === "suggestions"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  setActiveCoachTab("suggestions")
+                }
               >
-                <div>
-                  <span>Escalation Risk</span>
-                  <strong>
-                    {escalationRisk.risk_level}{" "}
-                    {escalationRisk.risk_score}%
-                  </strong>
+                Suggestions
+              </button>
+
+              <button
+                type="button"
+                className={
+                  activeCoachTab === "knowledge"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  setActiveCoachTab("knowledge")
+                }
+              >
+                Knowledge
+              </button>
+            </div>
+
+            {activeCoachTab === "suggestions" ? (
+              <div className="coach-content">
+                <div className="coach-analysis-card">
+                  <div className="coach-analysis-header">
+                    <div>
+                      <span className="panel-eyebrow">
+                        CONVERSATION ANALYSIS
+                      </span>
+
+                      <h3>
+                        Current assessment
+                      </h3>
+                    </div>
+
+                    {analysis?.confidence_score !==
+                      undefined && (
+                      <div className="confidence-mini">
+                        <span>Confidence</span>
+                        <strong>
+                          {analysis.confidence_score}%
+                        </strong>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="coach-metrics">
+                    <div>
+                      <span>Intent</span>
+                      <strong>
+                        {analysis?.intent ||
+                          "Unknown"}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Sentiment</span>
+                      <strong>
+                        {analysis?.sentiment ||
+                          "Neutral"}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Emotion</span>
+                      <strong>
+                        {analysis?.emotion ||
+                          "Calm"}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Frustration</span>
+                      <strong>
+                        {analysis?.frustration_level ??
+                          0}
+                        /10
+                      </strong>
+                    </div>
+                  </div>
                 </div>
 
-                {escalationRisk.reasons?.length > 0 && (
-                  <ul>
-                    {escalationRisk.reasons.map(
-                      (reason, index) => (
-                        <li key={index}>
-                          {reason}
-                        </li>
-                      )
+                {escalationRisk && (
+                  <div
+                    className={`escalation-card ${getRiskClass()}`}
+                  >
+                    <div className="escalation-top">
+                      <div>
+                        <span>
+                          ESCALATION RISK
+                        </span>
+
+                        <strong>
+                          {escalationRisk.risk_level}
+                        </strong>
+                      </div>
+
+                      <strong className="risk-score">
+                        {escalationRisk.risk_score}%
+                      </strong>
+                    </div>
+
+                    {escalationRisk.reasons
+                      ?.length > 0 && (
+                      <ul>
+                        {escalationRisk.reasons.map(
+                          (reason, index) => (
+                            <li key={index}>
+                              {reason}
+                            </li>
+                          )
+                        )}
+                      </ul>
                     )}
-                  </ul>
+                  </div>
+                )}
+
+                {coaching && (
+                  <>
+                    <div className="suggestion-card">
+                      <div className="suggestion-card-header">
+                        <span className="suggestion-icon">
+                          ▣
+                        </span>
+
+                        <span>
+                          SUGGESTED REPLY
+                        </span>
+                      </div>
+
+                      <p>
+                        {coaching.suggested_reply ||
+                          "No suggested reply available."}
+                      </p>
+
+                      <button
+                        type="button"
+                        className="use-reply-button"
+                        onClick={
+                          handleUseSuggestedReply
+                        }
+                      >
+                        Use This Reply
+                      </button>
+                    </div>
+
+                    <div className="tip-card">
+                      <div className="tip-card-header">
+                        <span>♧</span>
+
+                        <span>
+                          COACH TIP
+                        </span>
+                      </div>
+
+                      <p>
+                        {coaching.coach_tip ||
+                          "No coaching tip available."}
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
-            )}
+            ) : (
+              <div className="coach-content knowledge-content">
+                {knowledge ? (
+                  <>
+                    <div className="knowledge-card">
+                      <div className="knowledge-card-header">
+                        <span className="knowledge-icon">
+                          ▤
+                        </span>
 
-            {coaching && (
-              <div className="coaching-panel">
-                <span>Suggested Reply</span>
+                        <div>
+                          <span className="panel-eyebrow">
+                            KNOWLEDGE RECOMMENDATION
+                          </span>
 
-                <p>
-                  {coaching.suggested_reply ||
-                    "No suggested reply available."}
-                </p>
+                          <h3>
+                            Relevant information
+                          </h3>
+                        </div>
+                      </div>
 
-                <span>Coach Tip</span>
+                      <p>
+                        {knowledge.answer ||
+                          "No knowledge recommendation available."}
+                      </p>
+                    </div>
 
-                <p>
-                  {coaching.coach_tip ||
-                    "No coaching tip available."}
-                </p>
-              </div>
-            )}
+                    {knowledge.sources?.length >
+                      0 && (
+                      <div className="sources-card">
+                        <div className="sources-header">
+                          <span className="panel-eyebrow">
+                            SOURCES
+                          </span>
 
-            {knowledge && (
-              <div className="knowledge-panel">
-                <div>
-                  <span>Knowledge Recommendation</span>
+                          <span>
+                            {knowledge.sources.length}
+                          </span>
+                        </div>
 
-                  <p>
-                    {knowledge.answer ||
-                      "No knowledge recommendation available."}
-                  </p>
-                </div>
+                        <div className="sources-list">
+                          {knowledge.sources.map(
+                            (source, index) => (
+                              <div
+                                className="source-item"
+                                key={
+                                  source.chunk_id ||
+                                  index
+                                }
+                              >
+                                <div>
+                                  <span className="source-icon">
+                                    ◫
+                                  </span>
 
-                {knowledge.sources?.length > 0 && (
-                  <div>
-                    <span>Sources</span>
+                                  <div>
+                                    <strong>
+                                      {
+                                        source.document_name
+                                      }
+                                    </strong>
 
-                    <ul>
-                      {knowledge.sources.map(
-                        (source, index) => (
-                          <li
-                            key={
-                              source.chunk_id || index
-                            }
-                          >
-                            {source.document_name}
-                            {source.page_number
-                              ? ` — Page ${source.page_number}`
-                              : ""}
-                          </li>
-                        )
-                      )}
-                    </ul>
+                                    <span>
+                                      {source.page_number
+                                        ? `Page ${source.page_number}`
+                                        : "Knowledge source"}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <span className="source-arrow">
+                                  →
+                                </span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="coach-empty">
+                    <span>▤</span>
+
+                    <h3>
+                      Knowledge unavailable
+                    </h3>
+
+                    <p>
+                      Knowledge recommendations will
+                      appear here after the simulation
+                      starts.
+                    </p>
                   </div>
                 )}
               </div>
             )}
-          </div>
+          </aside>
         </div>
-      </div>
+      )}
     </section>
   );
 }

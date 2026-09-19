@@ -1,18 +1,21 @@
+from pathlib import Path
+
 from app.services.ingestion_service import ingest_document
 
 
-pdf_path = "data/documents/refund_policy_v1.pdf"
+PDF_PATH = Path("data/documents/Refund_policy_v2.pdf")
 
 
-result = ingest_document(
-    file_path=pdf_path,
-    document_id=1,
-    document_name="Refund Policy",
-    document_type="policy",
-    version=1,
-    uploaded_by="admin"
-)
+def test_ingest_document():
+    assert PDF_PATH.exists(), f"Test PDF not found: {PDF_PATH}"
 
+    result = ingest_document(
+        file_path=str(PDF_PATH),
+        document_id=1,
+        document_name="Refund Policy",
+        document_type="policy",
+        version=2,
+        uploaded_by="admin",
+    )
 
-print("\nINGESTION RESULT:")
-print(result)
+    assert result is not None
